@@ -8,13 +8,13 @@ dotenv.config();
 
 const app = express();
 
-//settings
 
 
 //midlewares
 app.use(express.json()); //cada vez que se envie un dato en Json el servidor lo va a interpretar y lo guarda dentro de un req.body
 
 
+//settings
 app.use(cors());
 
 //routes

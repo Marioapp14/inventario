@@ -1,4 +1,5 @@
 'use strict';
+const { Client } = require("pg");
 
 const fs = require('fs');
 const path = require('path');
@@ -9,12 +10,26 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
+
+
+
+
+
+
 let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  console.log(sequelize);
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
+
+sequelize.authenticate().then(() => {
+  console.log("Conexión establecida correctamente.");
+}).catch(err => {
+  console.error("No se pudo conectar a la base de datos:", err);
+});
+
 
 fs
   .readdirSync(__dirname)
