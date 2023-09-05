@@ -27,9 +27,6 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "CASCADE",
       });
 
-     
-
-
     
     }
   }
@@ -44,6 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       ubicacion: DataTypes.STRING,
       numero_contrato: DataTypes.STRING,
       numero_factura: DataTypes.STRING,
+      valor: DataTypes.INTEGER,
       id_proveedor: DataTypes.INTEGER,
       frecuencia_mantenimiento: DataTypes.STRING,
     },

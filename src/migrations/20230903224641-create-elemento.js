@@ -38,6 +38,9 @@ module.exports = {
       numero_factura: {
         type: Sequelize.STRING
       },
+      valor: {
+        type: Sequelize.INTEGER
+      },
       id_proveedor: {
         type: Sequelize.INTEGER
       },

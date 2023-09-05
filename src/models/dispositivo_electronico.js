@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       });
 
-      dispositivo_electronico.belongsTo(models.marca__dispositivo, {
+      dispositivo_electronico.belongsTo(models.marca_dispositivo, {
         foreignKey: "id_marca",
         onDelete: "CASCADE",
         references: {
