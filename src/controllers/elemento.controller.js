@@ -1,10 +1,10 @@
 const db = require("../models");
-const Op = require("sequelize");
+const { Op } = require("sequelize");
 
 const getElementos = async (req, res) => {
   try {
     // obtiene los parametros de la url para la paginacion de los servicios
-    const { limit = 10, offset, filtro } = req.query;
+    const { limit = 10, offset = 0, filtro } = req.query;
 
     // consulta a la base de datos para obtener todos los elementos
     const options = {
@@ -12,11 +12,11 @@ const getElementos = async (req, res) => {
         {
           model: db.estado_elemento,
           attributes: ["nombre"],
-          // where: {
-          //   id: {
-          //     [Op.ne]: 4,
-          //   },
-          // },
+          where: {
+            id: {
+              [Op.ne]: 4,
+            },
+          },
         },
         {
           model: db.tipo_elemento,
@@ -31,6 +31,7 @@ const getElementos = async (req, res) => {
           attributes: ["nombre"],
         },
       ],
+      order: [["id", "ASC"]],
       limit,
       offset,
     };
@@ -39,13 +40,13 @@ const getElementos = async (req, res) => {
     if (filtro) {
       options.where = {
         nombre: {
-          [db.Sequelize.Op.like]: `%${filtro}%`,
+          [db.Sequelize.Op.iLike]: `%${filtro}%`,
         },
       };
     }
 
     // se realiza la consulta a la base de datos
-    const elementos = await db.elemento.findAll();
+    const elementos = await db.elemento.findAll(options);
 
     res.json(elementos);
   } catch (error) {
@@ -76,6 +77,10 @@ const getElemento = async (req, res) => {
           model: db.origen_elemento,
           attributes: ["nombre"],
         },
+        {
+          model: db.proveedores,
+          attributes: ["nombre"],
+        }
       ],
     });
     if (!elemento)
@@ -221,7 +226,6 @@ const updateElemento = async (req, res) => {
       ],
     });
 
-
     return res.status(200).json({
       success: true,
       message: "Elemento actualizado",
@@ -238,7 +242,7 @@ const updateElemento = async (req, res) => {
 const deleteElemento = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     //Encuentra el elemento a eliminar
     const elemento = await db.elemento.findOne({
       where: {
@@ -269,7 +273,6 @@ const deleteElemento = async (req, res) => {
       success: true,
       message: "Elemento eliminado exitosamente",
     });
-
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

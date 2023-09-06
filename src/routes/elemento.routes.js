@@ -11,10 +11,10 @@ const {
 const router = Router();
 
 router.get("/elementos", getElementos);
-router.get("/elementos/:id", getElemento);
-router.post("/elementos", CreateElemento);
-router.put("/elementos/:id", updateElemento);
-router.delete("/elementos/:id", deleteElemento);
+router.get("/elemento/:id", getElemento);
+router.post("/elemento", CreateElemento);
+router.put("/elemento/:id", updateElemento);
+router.delete("/elemento/:id", deleteElemento);
 
 
 
