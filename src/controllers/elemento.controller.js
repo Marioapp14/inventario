@@ -63,6 +63,9 @@ const getElemento = async (req, res) => {
     const elemento = await db.elemento.findOne({
       where: {
         id: id,
+        id_estado: {
+          [Op.ne]: 4,
+        },
       },
       include: [
         {
@@ -80,13 +83,15 @@ const getElemento = async (req, res) => {
         {
           model: db.proveedores,
           attributes: ["nombre"],
-        }
+        },
       ],
     });
     if (!elemento)
       return res
         .status(404)
-        .json({ message: `No existe el elemento con id ${id}` });
+        .json({
+          message: `No existe el elemento con id ${id} o no esta disponuble`,
+        });
 
     res.json(elemento);
   } catch (error) {
