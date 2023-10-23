@@ -12,10 +12,168 @@ const getElementos = async (req, res) => {
         {
           model: db.estado_elemento,
           attributes: ["nombre"],
+        },
+        {
+          model: db.tipo_elemento,
+          attributes: ["nombre"],
+        },
+        {
+          model: db.origen_elemento,
+          attributes: ["nombre"],
+        },
+        {
+          model: db.proveedores,
+          attributes: ["nombre"],
+        },
+      ],
+      order: [["id", "ASC"]],
+      limit,
+      offset,
+    };
+
+    // si se envia un filtro por nombre, se agrega a la consulta
+    if (filtro) {
+      options.where = {
+        nombre: {
+          [db.Sequelize.Op.iLike]: `%${filtro}%`,
+        },
+      };
+    }
+
+    // se realiza la consulta a la base de datos
+    const elementos = await db.elemento.findAll(options);
+
+    res.json(elementos);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error al obtener los elementos",
+    });
+  }
+};
+
+const getElementosDisponibles = async (req, res) => {
+  try {
+    // obtiene los parametros de la url para la paginacion de los servicios
+    const { limit = 10, offset = 0, filtro } = req.query;
+
+    // consulta a la base de datos para obtener todos los elementos
+    const options = {
+      include: [
+        {
+          model: db.estado_elemento,
+          attributes: ["nombre"],
           where: {
-            id: {
-              [Op.ne]: 4,
-            },
+            id: 1,
+          },
+        },
+        {
+          model: db.tipo_elemento,
+          attributes: ["nombre"],
+        },
+        {
+          model: db.origen_elemento,
+          attributes: ["nombre"],
+        },
+        {
+          model: db.proveedores,
+          attributes: ["nombre"],
+        },
+      ],
+      order: [["id", "ASC"]],
+      limit,
+      offset,
+    };
+
+    // si se envia un filtro por nombre, se agrega a la consulta
+    if (filtro) {
+      options.where = {
+        nombre: {
+          [db.Sequelize.Op.iLike]: `%${filtro}%`,
+        },
+      };
+    }
+
+    // se realiza la consulta a la base de datos
+    const elementos = await db.elemento.findAll(options);
+
+    res.json(elementos);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error al obtener los elementos",
+    });
+  }
+};
+
+const getElementosReservados = async (req, res) => {
+  try {
+    // obtiene los parametros de la url para la paginacion de los servicios
+    const { limit = 10, offset = 0, filtro } = req.query;
+
+    // consulta a la base de datos para obtener todos los elementos
+    const options = {
+      include: [
+        {
+          model: db.estado_elemento,
+          attributes: ["nombre"],
+          where: {
+            id: 4,
+          },
+        },
+        {
+          model: db.tipo_elemento,
+          attributes: ["nombre"],
+        },
+        {
+          model: db.origen_elemento,
+          attributes: ["nombre"],
+        },
+        {
+          model: db.proveedores,
+          attributes: ["nombre"],
+        },
+      ],
+      order: [["id", "ASC"]],
+      limit,
+      offset,
+    };
+
+    // si se envia un filtro por nombre, se agrega a la consulta
+    if (filtro) {
+      options.where = {
+        nombre: {
+          [db.Sequelize.Op.iLike]: `%${filtro}%`,
+        },
+      };
+    }
+
+    // se realiza la consulta a la base de datos
+    const elementos = await db.elemento.findAll(options);
+
+    res.json(elementos);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error al obtener los elementos",
+    });
+  }
+};
+
+
+const getElementosPrestados = async (req, res) => {
+  try {
+    // obtiene los parametros de la url para la paginacion de los servicios
+    const { limit = 10, offset = 0, filtro } = req.query;
+
+    // consulta a la base de datos para obtener todos los elementos
+    const options = {
+      include: [
+        {
+          model: db.estado_elemento,
+          attributes: ["nombre"],
+          where: {
+            id: 3,
           },
         },
         {
@@ -87,11 +245,9 @@ const getElemento = async (req, res) => {
       ],
     });
     if (!elemento)
-      return res
-        .status(404)
-        .json({
-          message: `No existe el elemento con id ${id} o no esta disponuble`,
-        });
+      return res.status(404).json({
+        message: `No existe el elemento con id ${id} o no esta disponuble`,
+      });
 
     res.json(elemento);
   } catch (error) {
@@ -163,7 +319,7 @@ const updateElemento = async (req, res) => {
   try {
     const { id } = req.params;
     const nuevosDatos = req.body;
-
+    console.log(id);
     //Actualiza los campos del elemento en la base de datos
     await db.elemento.update(nuevosDatos, {
       where: {
@@ -181,7 +337,6 @@ const updateElemento = async (req, res) => {
     }
 
     // si hay un dispositivo asociado, se actualiza
-
     const dispositivo = await db.dispositivo.findOne({
       where: {
         id_elemento: id,
@@ -231,11 +386,182 @@ const updateElemento = async (req, res) => {
       ],
     });
 
+    //actualiza el estado del elemento a reservado
+    await db.elemento.update(
+      {
+        id_estado: 4,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+
     return res.status(200).json({
       success: true,
       message: "Elemento actualizado",
       elemento,
     });
+  } catch (error) {
+    return res.status(200).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const updateElementoReserva = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const elemento = await db.elemento.findOne({
+      where: {
+        id: id,
+      },
+      include: [
+        {
+          model: db.estado_elemento,
+          attributes: ["nombre"],
+        },
+        {
+          model: db.tipo_elemento,
+          attributes: ["nombre"],
+        },
+        {
+          model: db.origen_elemento,
+          attributes: ["nombre"],
+        },
+        {
+          model: db.proveedores,
+          attributes: ["nombre"],
+        },
+      ],
+    });
+    if (!elemento)
+      return res.status(404).json({
+        message: `No existe el elemento con id ${id} o no esta disponuble`,
+      });
+
+    //Actualiza el estado del elemento en la base de datos
+    await db.elemento.update(
+      {
+        id_estado: 4,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+
+    res.json(elemento);
+  } catch (error) {
+    return res.status(200).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const updateElementoPrestamo = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const elemento = await db.elemento.findOne({
+      where: {
+        id: id,
+      },
+      include: [
+        {
+          model: db.estado_elemento,
+          attributes: ["nombre"],
+        },
+        {
+          model: db.tipo_elemento,
+          attributes: ["nombre"],
+        },
+        {
+          model: db.origen_elemento,
+          attributes: ["nombre"],
+        },
+        {
+          model: db.proveedores,
+          attributes: ["nombre"],
+        },
+      ],
+    });
+    if (!elemento)
+      return res.status(404).json({
+        message: `No existe el elemento con id ${id} o no esta disponuble`,
+      });
+
+    //Actualiza el estado del elemento en la base de datos
+    await db.elemento.update(
+      {
+        id_estado: 3,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+
+    res.json(elemento);
+  } catch (error) {
+    return res.status(200).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const updateElementoDisponible = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const elemento = await db.elemento.findOne({
+      where: {
+        id: id,
+      },
+      include: [
+        {
+          model: db.estado_elemento,
+          attributes: ["nombre"],
+        },
+        {
+          model: db.tipo_elemento,
+          attributes: ["nombre"],
+        },
+        {
+          model: db.origen_elemento,
+          attributes: ["nombre"],
+        },
+        {
+          model: db.proveedores,
+          attributes: ["nombre"],
+        },
+      ],
+    });
+    if (!elemento)
+      return res.status(404).json({
+        message: `No existe el elemento con id ${id} o no esta disponuble`,
+      });
+
+    //Actualiza el estado del elemento en la base de datos
+    await db.elemento.update(
+      {
+        id_estado: 1,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+
+    res.json(elemento);
   } catch (error) {
     return res.status(200).json({
       success: false,
@@ -289,4 +615,10 @@ module.exports = {
   CreateElemento,
   updateElemento,
   deleteElemento,
+  updateElementoReserva,
+  updateElementoPrestamo,
+  updateElementoDisponible,
+  getElementosReservados,
+  getElementosPrestados,
+  getElementosDisponibles
 };
