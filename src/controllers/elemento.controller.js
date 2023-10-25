@@ -160,7 +160,6 @@ const getElementosReservados = async (req, res) => {
   }
 };
 
-
 const getElementosPrestados = async (req, res) => {
   try {
     // obtiene los parametros de la url para la paginacion de los servicios
@@ -221,9 +220,9 @@ const getElemento = async (req, res) => {
     const elemento = await db.elemento.findOne({
       where: {
         id: id,
-        id_estado: {
-          [Op.ne]: 4,
-        },
+        // id_estado: {
+        //   [Op.ne]: 4,
+        // },
       },
       include: [
         {
@@ -476,6 +475,10 @@ const updateElementoPrestamo = async (req, res) => {
         {
           model: db.estado_elemento,
           attributes: ["nombre"],
+          // añadido
+          // where: {
+          //   id: 1,
+          // },
         },
         {
           model: db.tipo_elemento,
@@ -546,7 +549,7 @@ const updateElementoDisponible = async (req, res) => {
     });
     if (!elemento)
       return res.status(404).json({
-        message: `No existe el elemento con id ${id} o no esta disponuble`,
+        message: `No existe el elemento con id ${id} o no esta disponible`,
       });
 
     //Actualiza el estado del elemento en la base de datos
@@ -620,5 +623,5 @@ module.exports = {
   updateElementoDisponible,
   getElementosReservados,
   getElementosPrestados,
-  getElementosDisponibles
+  getElementosDisponibles,
 };

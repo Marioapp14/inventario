@@ -11,7 +11,7 @@ const {
   updateElementoDisponible,
   getElementosReservados,
   getElementosPrestados,
-  getElementosDisponibles
+  getElementosDisponibles,
 } = require("../controllers/elemento.controller");
 
 const router = Router();
